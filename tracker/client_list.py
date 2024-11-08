@@ -71,3 +71,15 @@ class ClientList:
                 b'downloaded': len(self.peers[info_hash])
             }
         }
+
+    def get_all_clients(self):
+        if not self.peers:
+            return []
+        all_clients = []
+        for peer_dict in self.peers.values():
+            for peer_id, peer_info in peer_dict.items():
+                all_clients.append({
+                    "id": peer_id,
+                    "ip": peer_info["ip"]
+                })
+        return all_clients

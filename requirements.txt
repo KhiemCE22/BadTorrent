@@ -2,5 +2,6 @@ requests==2.31.0
 unittest2==1.1.0
 bencodepy==0.9.5
 tabulate==0.8.9
-
+tqdm==4.62.3
+clint==0.5.1
 #pip install -r requirements.txt

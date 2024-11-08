@@ -1,0 +1,15 @@
+2024-11-08 10:14:23,649 - root - INFO - Ping server started on port 6884
+2024-11-08 10:14:29,371 - root - INFO - Scraping tracker for peer information...
+2024-11-08 10:14:29,372 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 192.168.56.1:8000
+2024-11-08 10:14:29,418 - urllib3.connectionpool - DEBUG - http://192.168.56.1:8000 "GET /scrape?info_hash=%B855%DBf%0A%ED%E3%02%1B%9AM%C0%82Z%E4x%EE%BD%19 HTTP/10" 200 None
+2024-11-08 10:15:14,426 - root - INFO - Signed out successfully from all trackers.
+=0&downloaded=0&left=16092264&event=completed&compact=1 HTTP/10" 200 None
+2024-11-08 10:14:25,995 - root - INFO - Seeding to peers: []
+2024-11-08 10:14:25,996 - root - INFO - Seeding server started on port 6882
+2024-11-08 10:15:29,694 - root - INFO - Received ping from ('192.168.56.1', 50700)
+2024-11-08 10:15:29,724 - root - INFO - Sent pong response
+2024-11-08 10:15:40,571 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 192.168.56.1:8000
+2024-11-08 10:15:40,597 - urllib3.connectionpool - DEBUG - http://192.168.56.1:8000 "GET /announce?peer_id=P8zOuckTnqPLFZq16Mz7&port=6883&event=stopped HTTP/10" 200 None
+2024-11-08 10:15:40,625 - root - INFO - Signed out from tracker: b'http://192.168.56.1:8000/announce'
+2024-11-08 10:15:40,625 - root - INFO - Signed out successfully from all trackers.
+2024-11-08 10:15:41,529 - root - INFO - Seeding server stopped.
