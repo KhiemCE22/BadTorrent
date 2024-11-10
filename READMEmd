@@ -1,4 +1,6 @@
-# Use client_cli.py
+# Require: Python version 3.12
+Install package in `requirements.txt`
+# How to use client_cli.py
 
 ## Commands:
 
