@@ -4,4 +4,5 @@ bencodepy==0.9.5
 tabulate==0.8.9
 tqdm==4.62.3
 clint==0.5.1
+pyperclip==1.8.2
 #pip install -r requirements.txt

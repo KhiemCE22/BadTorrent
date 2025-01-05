@@ -182,9 +182,11 @@ class ClientNode:
             self.announce(info_hash, port or self.download_port, event='completed')
             logging.info(f"Download completed. Files saved to {file_path}")
             print(f"Download completed. Files saved to {file_path}")
+            return 1
         else:
             logging.error("Download failed.")
             print("Download failed.")
+            return 0
 
     def seed_torrent(self, torrent_file, complete_file, port=None, upload_rate=None):
         """Handle the seeding process of a torrent."""
@@ -479,9 +481,11 @@ class ClientNode:
             self.announce(info_hash, self.download_port, event='completed')
             logging.info(f"Download completed. Files saved to {file_path}")
             print(f"Download completed. Files saved to {file_path}")
+            return 1
         else:
             logging.error("Download failed.")
             print("Download failed.")
+            return 0
 
 
     def start_ping_server(self):

@@ -5,7 +5,6 @@ import logging
 import queue
 import threading
 import hashlib
-import time
 from tqdm import tqdm
 from p2p.peer_communication import Communicator
 from p2p.peer import Peer
@@ -13,18 +12,22 @@ from p2p.message import Message, MessageID
 from p2p.piece import Piece
 
 # Configure logging to write to a file
-import logging_config
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG
+)
 
 # Constants
 MAX_BLOCK_SIZE = 16384  # 16 KB
 MAX_BACKLOG = 5  # Number of unfulfilled requests
 
 class DownloadingManager:
-    def __init__(self):
+    def __init__(self, progress_bar=None):
         self.downloaded_pieces = 0
-        self.peer_clients = []
         self.downloaded_pieces_lock = threading.Lock()
-        self.progress_bar = None
+        self.peer_clients = []
+        self.progress_bar = progress_bar  # Add progress bar
+
         # Thông báo `NotInterested` cho tất cả các peer
     def notify_all_peers_not_interested(self):
         for client in self.peer_clients:
@@ -60,6 +63,8 @@ class DownloadingManager:
                         results_queue.put((piece.index, data))
                         with self.downloaded_pieces_lock:
                             self.downloaded_pieces += 1
+                            if self.progress_bar:
+                                self.progress_bar.update(1)  # Update progress bar
                             logging.info(f"DOWLOADED_PIECES: {self.downloaded_pieces} - TOTAL_PIECES: {total_pieces}")  
                             if self.downloaded_pieces >= total_pieces:
                                 self.notify_all_peers_not_interested()
@@ -167,7 +172,6 @@ class DownloadingManager:
                     elif global_piece_index in file_data:
                         piece_data = file_data[global_piece_index]
                         global_piece_index += 1
-                        self.progress_bar.update(1)
                     else:
                         break  # Không còn dữ liệu để ghi
 
@@ -182,17 +186,7 @@ class DownloadingManager:
     def prepare_download_file(self, download_dir):
         if not os.path.exists(download_dir):
             os.makedirs(download_dir)
-    # def update_progress(self):
-    #     """Update the progress bar based on downloaded pieces."""
-    #     while True:
-    #         while not self.stop_progress_thread.is_set():
-    #             while not self.progress_queue.empty():
-    #                 with self.progress_lock:  # Đảm bảo an toàn khi truy cập hàng đợi
-    #                     self.progress_queue.get()
-    #                     self.progress_bar.update(1)
 
-    #             if threading.active_count() == 1 and self.progress_queue.empty():
-    #                 break
     def start_download(self, peers, pieces, info_hash, peer_id, download_dir, files):
         logging.info(f"download_dir: {download_dir}")
         if files is not None:
@@ -206,28 +200,23 @@ class DownloadingManager:
         for piece in pieces:
             work_queue.put(piece)
         
-    
-
         # Khởi động một luồng cho mỗi peer
         threads = []
         download_successful = True  # Cờ để kiểm tra xem quá trình tải có hoàn tất không
         total_pieces = len(pieces)
+        progress_bar = tqdm(total=total_pieces, desc="Downloading pieces", unit="piece")
 
         for peer in peers:
             t = threading.Thread(target=self.download_worker, args=(peer, work_queue, results_queue, info_hash, peer_id, total_pieces))
             t.start()
             threads.append(t)
-
-        # # Luồng để cập nhật thanh tiến độ
-        # progress_thread = threading.Thread(target=self.update_progress)
-        # progress_thread.start()
-        self.progress_bar = tqdm(total=total_pieces, desc='Assembling Files', unit='piece')
+        
         # Chờ tất cả luồng hoàn tất
         for t in threads:
             t.join()
-        # self.stop_progress_thread.set()
-        # progress_thread.join()
-        
+            progress_bar.update(1)
+
+        progress_bar.close()
 
         # Kiểm tra xem tất cả các mảnh đã tải thành công chưa
         downloaded_pieces = results_queue.qsize()
@@ -243,7 +232,7 @@ class DownloadingManager:
         else:
             download_successful = False
             logging.error("Download incomplete: Some pieces failed to download due to timeouts.")
-        self.progress_bar.close()
+
         # Thông báo cuối cùng chỉ ra lỗi nếu quá trình tải không thành công
         if not download_successful:
             logging.info("Download was incomplete. Please check network and retry.")

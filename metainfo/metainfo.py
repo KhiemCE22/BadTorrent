@@ -54,7 +54,7 @@ class Metainfo:
 
         magnet_link = f"magnet:?xt=urn:btih:{info_hash}&dn={urllib.parse.quote(name)}"
         for tracker_url in tracker_urls:
-            magnet_link += f"&tr={urllib.parse.quote(tracker_url)}"
+            magnet_link += f"&tr={urllib.parse.quote(tracker_url, safe='')}"
 
         return magnet_link
 
